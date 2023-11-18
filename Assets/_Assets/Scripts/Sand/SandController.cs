@@ -71,10 +71,6 @@ public class SandController : MonoBehaviour
     {
         _lastTime = Time.time;
 
-        // _position.x = VirtualPositionGrid.GetLength(0) - 1;
-        // _position.y = Random.Range(0, VirtualPositionGrid.GetLength(1));
-        // _position.y =0;
-
         UpdateColor();
         UpdatePosition();
     }
@@ -87,27 +83,6 @@ public class SandController : MonoBehaviour
     private Color GetColor()
     {
         return _objectValue.ToColor();
-    }
-
-
-    public void UpdateCallback()
-    {
-        if (!HasPastInterval()) return;
-        Move();
-    }
-
-    private bool HasPastInterval()
-    {
-        return true;
-        if (Time.time > _interval + _lastTime)
-        {
-            _lastTime += _interval;
-            LogPosition();
-            Log("pass interval");
-            return true;
-        }
-
-        return false;
     }
 
     public bool At(Vector2Int position)
@@ -306,9 +281,6 @@ public class SandController : MonoBehaviour
     private void UpdatePosition(Vector3 newPosition)
     {
         transform.position = newPosition;
-        // transform.Translate(Vector3.down * moveSpeed * Time.deltaTime);
-        // transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
-        // transform.Translate(Vector3.left * moveSpeed * Time.deltaTime);
     }
 
     public void SetParent(Transform newParent)

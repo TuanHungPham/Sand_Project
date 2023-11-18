@@ -1,21 +1,26 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class SandSpawner : MonoBehaviour
 {
-    [SerializeField] private int _firstOnBoardRow;
-    [SerializeField] private int _maxBlockPerTurn;
+    [Header("In Game Sand Block")] [SerializeField]
+    private int _firstOnBoardRow;
+
     [SerializeField] private int _startColumn;
-    [SerializeField] private bool _shouldCreateNewSand;
     [SerializeField] private bool _shouldLog;
     [SerializeField] private int _objectValue = 1;
     [SerializeField] private SandController _sandPfb;
     [SerializeField] private Transform _sandRoot;
     [SerializeField] private List<SandController> _sands;
 
+    [Space(20)] [Header("In Queue Sand Block")] [SerializeField]
+    private int _maxBlockPerTurn;
+
+    [SerializeField] private bool _shouldCreateNewSand;
+    [SerializeField] private QueueSandBlock _queueSandBlock;
+    [SerializeField] private Transform _sandQueue;
+    [SerializeField] private List<QueueSandBlock> _queueSandBlockList = new List<QueueSandBlock>();
     [SerializeField] private List<int> _queueBlockStartColumns = new List<int>();
 
     private GameBoard _gameBoard;
@@ -97,13 +102,20 @@ public class SandSpawner : MonoBehaviour
 
     private void CreateQueueVirtualShape(Shape shape, int startColumn)
     {
+        QueueSandBlock queueSandBlock = Instantiate(_queueSandBlock, _sandQueue, true);
+
         for (var j = 0; j < shape.Column; j++)
         for (var i = shape.Row - 1; i >= 0; i--)
         {
             if (shape.Matrix[i, j] == 0)
                 continue;
             var sand = CreateNewSand(QueueRow - i - 1, j + startColumn, true);
+            sand.SetParent(queueSandBlock.transform);
+            queueSandBlock.AddSandToQueueBlock(sand);
         }
+
+        _queueSandBlockList.Add(queueSandBlock);
+        queueSandBlock.Initialize(shape);
     }
 
     private void CreateOnBoardVirtualShape(Shape shape, int startColumn)
