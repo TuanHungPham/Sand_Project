@@ -1282,7 +1282,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09fde6d4a22047f9a0e3dcd896dd4fef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _interactingRadius: 0
+  _initialPosition: {x: 0, y: 0, z: 0}
+  _interactingRadius: 1
   _sandList: []
 --- !u!1 &501175381210237314
 GameObject:
@@ -19298,7 +19299,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3734098511971057546
 Transform:
   m_ObjectHideFlags: 0
@@ -19307,7 +19308,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8718161474583156347}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.801, y: -0.718, z: 0}
+  m_LocalPosition: {x: -0.754, y: -0.765, z: 0}
   m_LocalScale: {x: 1, y: 0.08, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

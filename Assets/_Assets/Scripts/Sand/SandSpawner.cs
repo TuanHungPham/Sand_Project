@@ -222,4 +222,9 @@ public class SandSpawner : MonoBehaviour
             var sand = CreateNewSand(OnBoardRow - i - 1, j + _startColumn);
         }
     }
+
+    public List<QueueSandBlock> GetQueueSandBlockList()
+    {
+        return _queueSandBlockList;
+    }
 }
