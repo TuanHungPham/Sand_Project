@@ -27,6 +27,11 @@ public class ShapeReader : MonoBehaviour
         return Shapes[defaultShape];
     }
 
+    public Shape GetShape(int shape)
+    {
+        return Shapes[shape];
+    }
+
     private void TestReadShape()
     {
         Random.InitState((int)DateTime.Now.Ticks);

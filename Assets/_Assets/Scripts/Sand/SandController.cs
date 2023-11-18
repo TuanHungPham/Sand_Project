@@ -13,12 +13,7 @@ public enum eSandType
 
 public class SandController : MonoBehaviour
 {
-    [SerializeField] private float _moveSpeed = 1f;
-
     [SerializeField] private Vector2Int _position;
-
-    [SerializeField] private float _interval = 5f;
-
     [SerializeField] private bool _shouldLog;
 
     [SerializeField] private SpriteRenderer _renderer;
@@ -44,7 +39,7 @@ public class SandController : MonoBehaviour
     }
 
     public Transform[,] OnBoardVirtualPositionGrid => GameBoard.OnBoardVirtualPositionGrid;
-    public Transform[,] QueueVirtualPosititonGrid => GameBoard.QueueVirtualPositionGrid;
+    public Transform[,] QueueVirtualPosititonGrid;
 
     public Vector2Int Position
     {
@@ -58,13 +53,22 @@ public class SandController : MonoBehaviour
         Init();
     }
 
-    public void SetData(int currentRow, int currentColumn, int objectValue, bool isQueueSand = false)
+    public void SetData(int currentRow, int currentColumn, int objectValue)
+    {
+        _position.x = currentRow;
+        _position.y = currentColumn;
+        _objectValue = objectValue;
+        _sandType = (eSandType)objectValue;
+    }
+
+    public void SetData(int currentRow, int currentColumn, int objectValue, bool isQueueSand, Transform[,] queueGrid)
     {
         _position.x = currentRow;
         _position.y = currentColumn;
         _objectValue = objectValue;
         _sandType = (eSandType)objectValue;
         _isQueueSand = isQueueSand;
+        QueueVirtualPosititonGrid = queueGrid;
     }
 
     private void Init()

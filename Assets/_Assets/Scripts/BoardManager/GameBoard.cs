@@ -6,7 +6,6 @@ using UnityEngine.Serialization;
 public class GameBoard : MonoBehaviour
 {
     public PositionGridView onBoardPositionGridView;
-    public PositionGridView queuePositionGridView;
     public int Left;
     public int Right;
     [SerializeField] private bool _isUpdateMatrixFromHierarchy = true;
@@ -26,8 +25,6 @@ public class GameBoard : MonoBehaviour
     }
 
     public Transform[,] OnBoardVirtualPositionGrid { get; set; }
-    public Transform[,] QueueVirtualPositionGrid { get; set; }
-
     public int OnBoardRow { get; private set; }
     public int OnBoardColumn { get; private set; }
     public int QueueRow { get; private set; }
@@ -56,7 +53,6 @@ public class GameBoard : MonoBehaviour
     private void Initialize()
     {
         InitOnBoardVirtualMatrix();
-        InitQueueVirtualMatrix();
 
         InitSandMatrix();
         InitLogicalMatrix();
@@ -77,19 +73,6 @@ public class GameBoard : MonoBehaviour
         for (var row = 0; row < OnBoardRow; row++)
         for (var column = 0; column < OnBoardColumn; column++)
             OnBoardVirtualPositionGrid[row, column] = positionGrid[row].positions[column];
-    }
-
-    private void InitQueueVirtualMatrix()
-    {
-        var positionGrid = queuePositionGridView.positionGrid;
-        QueueRow = positionGrid.Count;
-        QueueColumn = positionGrid[0].positions.Length;
-
-        QueueVirtualPositionGrid = new Transform[QueueRow, QueueColumn];
-
-        for (var row = 0; row < QueueRow; row++)
-        for (var column = 0; column < QueueColumn; column++)
-            QueueVirtualPositionGrid[row, column] = positionGrid[row].positions[column];
     }
 
     private void InitSandMatrix()

@@ -5,9 +5,8 @@ using Random = UnityEngine.Random;
 public class SandSpawner : MonoBehaviour
 {
     [Header("In Game Sand Block")] [SerializeField]
-    private int _firstOnBoardRow;
+    private int _startColumn;
 
-    [SerializeField] private int _startColumn;
     [SerializeField] private bool _shouldLog;
     [SerializeField] private int _objectValue = 1;
     [SerializeField] private SandController _sandPfb;
@@ -15,13 +14,12 @@ public class SandSpawner : MonoBehaviour
     [SerializeField] private List<SandController> _sands;
 
     [Space(20)] [Header("In Queue Sand Block")] [SerializeField]
-    private int _maxBlockPerTurn;
+    private bool _shouldCreateNewSand;
 
-    [SerializeField] private bool _shouldCreateNewSand;
     [SerializeField] private QueueSandBlock _queueSandBlock;
     [SerializeField] private Transform _sandQueue;
     [SerializeField] private List<QueueSandBlock> _queueSandBlockList = new List<QueueSandBlock>();
-    [SerializeField] private List<int> _queueBlockStartColumns = new List<int>();
+    [SerializeField] private QueuePointManager _queuePointManager;
 
     private GameBoard _gameBoard;
 
@@ -42,7 +40,6 @@ public class SandSpawner : MonoBehaviour
 
     private int OnBoardRow => GameBoard.OnBoardRow;
     private int OnBoardColumn => GameBoard.OnBoardColumn;
-    private int QueueRow => GameBoard.QueueRow;
 
     private List<SandController> Sands
     {
@@ -100,22 +97,15 @@ public class SandSpawner : MonoBehaviour
         _startColumn = OnBoardColumn / 2;
     }
 
-    private void CreateQueueVirtualShape(Shape shape, int startColumn)
+    private void CreateQueueSand()
     {
-        QueueSandBlock queueSandBlock = Instantiate(_queueSandBlock, _sandQueue, true);
-
-        for (var j = 0; j < shape.Column; j++)
-        for (var i = shape.Row - 1; i >= 0; i--)
+        foreach (Transform point in _queuePointManager.GetPointList())
         {
-            if (shape.Matrix[i, j] == 0)
-                continue;
-            var sand = CreateNewSand(QueueRow - i - 1, j + startColumn, true);
-            sand.SetParent(queueSandBlock.transform);
-            queueSandBlock.AddSandToQueueBlock(sand);
-        }
+            QueueSandBlock queueSandBlock = Instantiate(_queueSandBlock, _sandQueue, true);
+            queueSandBlock.transform.position = point.position;
 
-        _queueSandBlockList.Add(queueSandBlock);
-        queueSandBlock.Initialize(shape);
+            _queueSandBlockList.Add(queueSandBlock);
+        }
     }
 
     private void CreateOnBoardVirtualShape(Shape shape, int startColumn)
@@ -125,7 +115,7 @@ public class SandSpawner : MonoBehaviour
         {
             if (shape.Matrix[i, j] == 0)
                 continue;
-            var sand = CreateNewSand(OnBoardRow - i - _firstOnBoardRow, j + startColumn);
+            var sand = CreateNewSand(OnBoardRow - i - 1, j + startColumn);
         }
     }
 
@@ -139,10 +129,10 @@ public class SandSpawner : MonoBehaviour
             sand.SetData(row, column, _objectValue);
             AddSand(sand);
         }
-        else
-        {
-            sand.SetData(row, column, _objectValue, true);
-        }
+        // else
+        // {
+        //     sand.SetData(row, column, _objectValue, true);
+        // }
 
         return sand;
     }
@@ -191,11 +181,7 @@ public class SandSpawner : MonoBehaviour
         {
             _shouldCreateNewSand = false;
 
-            for (int i = 0; i < _maxBlockPerTurn; i++)
-            {
-                var shape = GetShape();
-                CreateQueueVirtualShape(shape, _queueBlockStartColumns[i] - shape.Column / 2 - 1);
-            }
+            CreateQueueSand();
         }
     }
 
