@@ -26,7 +26,7 @@ public class PositionGridView : MonoBehaviour
         for (int i= 0; i<positionRows.Length;i++)
         {
             positionGrid.Add(positionRows[i].row);
-            positionRows[i].transform.localPosition = Vector3.up*i;
+            positionRows[i].transform.localPosition = Vector3.down*i;
         }
     }
 
