@@ -51,4 +51,14 @@ public class QueueSandBlock : MonoBehaviour
         Gizmos.DrawCube(transform.position, new Vector3(_interactingRadius, _interactingRadius, _interactingRadius));
         Gizmos.color = Color.white;
     }
+
+    public void SetShape(Shape shape)
+    {
+        _shape = shape;
+    }
+
+    public Shape GetShape()
+    {
+        return _shape;
+    }
 }

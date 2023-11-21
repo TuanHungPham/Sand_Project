@@ -100,12 +100,13 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
         {
             QueueSandBlock queueSandBlock = Instantiate(_queueSandBlock, _sandQueue, true);
             queueSandBlock.transform.position = point.position;
+            queueSandBlock.SetShape(ShapeReader.GetShape());
 
             _queueSandBlockList.Add(queueSandBlock);
         }
     }
 
-    private void CreateOnBoardVirtualShape(Shape shape, int startColumn)
+    public void CreateOnBoardVirtualShape(Shape shape, int startColumn)
     {
         for (var j = 0; j < shape.Column; j++)
         for (var i = shape.Row - 1; i >= 0; i--)

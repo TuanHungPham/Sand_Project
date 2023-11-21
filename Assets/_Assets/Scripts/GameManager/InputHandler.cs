@@ -10,6 +10,7 @@ public class InputHandler : MonoBehaviour
     [SerializeField] private bool _isMouseHolding;
 
     private GameBoard GameBoard => GameBoard.Instance;
+    private SandSpawner SandSpawner => SandSpawner.Instance;
 
     private float MaxBoardLength
     {
@@ -107,8 +108,18 @@ public class InputHandler : MonoBehaviour
         _isMouseHolding = false;
 
         if (_currentSelectedQueueSandBlock == null) return;
-        _currentSelectedQueueSandBlock.ResetBlockPosition();
-        _currentSelectedQueueSandBlock = null;
+
+        if (targetColumn == -1)
+        {
+            _currentSelectedQueueSandBlock.ResetBlockPosition();
+            _currentSelectedQueueSandBlock = null;
+        }
+        else
+        {
+            SandSpawner.CreateOnBoardVirtualShape(_currentSelectedQueueSandBlock.GetShape(), targetColumn);
+            _currentSelectedQueueSandBlock.ResetBlockPosition();
+            _currentSelectedQueueSandBlock = null;
+        }
     }
 
     public void GetOnBoardColumnByMousePos()
