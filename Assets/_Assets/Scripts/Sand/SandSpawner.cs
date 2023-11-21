@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class SandSpawner : MonoBehaviour
+public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
 {
     [Header("In Game Sand Block")] [SerializeField]
     private int _startColumn;
@@ -12,6 +12,7 @@ public class SandSpawner : MonoBehaviour
     [SerializeField] private SandController _sandPfb;
     [SerializeField] private Transform _sandRoot;
     [SerializeField] private List<SandController> _sands;
+    private Dictionary<SandController, int> _sandDictionary;
 
     [Space(20)] [Header("In Queue Sand Block")] [SerializeField]
     private bool _shouldCreateNewSand;
@@ -29,17 +30,22 @@ public class SandSpawner : MonoBehaviour
 
     private Timer _timer;
 
-    private GameBoard GameBoard
-    {
-        get
-        {
-            if (!_gameBoard) _gameBoard = FindObjectOfType<GameBoard>();
-            return _gameBoard;
-        }
-    }
+    private GameBoard GameBoard => GameBoard.Instance;
+    private SandMatrix SandMatrix => GameBoard.SandMatrix;
 
     private int OnBoardRow => GameBoard.OnBoardRow;
     private int OnBoardColumn => GameBoard.OnBoardColumn;
+
+    private Dictionary<SandController, int> SandsDictionary
+    {
+        get
+        {
+            if (_sandDictionary == null) _sandDictionary = new Dictionary<SandController, int>();
+
+            return _sandDictionary;
+        }
+        set => _sandDictionary = value;
+    }
 
     private List<SandController> Sands
     {
@@ -52,16 +58,7 @@ public class SandSpawner : MonoBehaviour
         set => _sands = value;
     }
 
-    public ShapeReader ShapeReader
-    {
-        get
-        {
-            if (!_shapeReader)
-                _shapeReader = FindObjectOfType<ShapeReader>();
-            return _shapeReader;
-        }
-        private set => _shapeReader = value;
-    }
+    public ShapeReader ShapeReader => ShapeReader.Instance;
 
     private Timer Timer
     {
@@ -129,17 +126,14 @@ public class SandSpawner : MonoBehaviour
             sand.SetData(row, column, _objectValue);
             AddSand(sand);
         }
-        // else
-        // {
-        //     sand.SetData(row, column, _objectValue, true);
-        // }
 
         return sand;
     }
 
     private void AddSand(SandController sand)
     {
-        Sands.Add(sand);
+        // sand.SetSandIndex(Sands.Count);
+        SandsDictionary.Add(sand, 0);
         GameBoard.AddSandToMatrix(sand);
     }
 
@@ -170,8 +164,8 @@ public class SandSpawner : MonoBehaviour
     {
         if (!HasPastInterval())
             return;
-        foreach (var sand in Sands) sand.CheckMoveDown();
-        foreach (var sand in Sands) sand.CheckMoveDiagonally();
+        foreach (var sand in SandsDictionary) sand.Key.CheckMoveDown();
+        foreach (var sand in SandsDictionary) sand.Key.CheckMoveDiagonally();
     }
 
 
@@ -192,13 +186,12 @@ public class SandSpawner : MonoBehaviour
 
     public SandController GetSandAt(Vector2Int position)
     {
-        return Sands.Find(sand => sand.At(position));
+        return SandMatrix.At(position);
     }
 
-    public void DestroySandAt(Vector2Int position)
+    public void DestroySand(SandController sand)
     {
-        var sand = Sands.Find(sand => sand.At(position));
-        Sands.Remove(sand);
+        SandsDictionary.Remove(sand);
         sand.Destroy();
     }
 

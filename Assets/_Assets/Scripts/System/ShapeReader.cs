@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class ShapeReader : MonoBehaviour
+public class ShapeReader : TemporaryMonoSingleton<ShapeReader>
 {
     [SerializeField] private TextAsset[] _shapeTextAssets;
 

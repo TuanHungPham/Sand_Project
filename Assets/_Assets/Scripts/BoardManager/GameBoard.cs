@@ -3,7 +3,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class GameBoard : MonoBehaviour
+public class GameBoard : TemporaryMonoSingleton<GameBoard>
 {
     public PositionGridView onBoardPositionGridView;
     public int Left;

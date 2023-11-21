@@ -38,6 +38,7 @@ public class RegionGrouper : MonoBehaviour
         }
     }
 
+    private SandMatrix SandMatrix => GameBoard.SandMatrix;
     private int[,] Matrix => GameBoard.LogicalMatrix;
 
     private List<VirtualRegion> VirtualRegions
@@ -46,15 +47,7 @@ public class RegionGrouper : MonoBehaviour
         set => _virtualRegions = value;
     }
 
-    private SandSpawner SandSpawner
-    {
-        get
-        {
-            if (!_sandSpawner) _sandSpawner = FindObjectOfType<SandSpawner>();
-            return _sandSpawner;
-        }
-        set => _sandSpawner = value;
-    }
+    private SandSpawner SandSpawner => SandSpawner.Instance;
 
     private void Start()
     {
@@ -63,7 +56,7 @@ public class RegionGrouper : MonoBehaviour
 
     private void InitializeGroupSetting()
     {
-        _shoudlGroupVirtualRegions = true;
+        // _shoudlGroupVirtualRegions = true;
     }
 
     // Example usage
@@ -213,6 +206,8 @@ public class RegionGrouper : MonoBehaviour
     private void CollectRegion(Region region)
     {
         CollectLogicalRegion(region);
+
+        if (!_shoudlGroupVirtualRegions) return;
         CollectVirtualRegion(region);
     }
 
@@ -220,8 +215,10 @@ public class RegionGrouper : MonoBehaviour
     {
         for (int i = region._points.Count - 1; i >= 0; i--)
         {
-            SandSpawner.DestroySandAt(region._points[i]);
-            region._points.Remove(region._points[i]);
+            Vector2Int sandPos = region._points[i];
+            SandController sand = SandSpawner.GetSandAt(sandPos);
+
+            SandSpawner.DestroySand(sand);
         }
 
         _regions.Remove(region);

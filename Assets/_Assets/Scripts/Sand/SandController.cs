@@ -19,8 +19,8 @@ public class SandController : MonoBehaviour
     [SerializeField] private SpriteRenderer _renderer;
     [SerializeField] private eSandType _sandType;
     [SerializeField] private bool _isQueueSand;
+    [SerializeField] private int _index;
     private int _emptyValue; // The value representing an empty position in the logical matrix
-    private GameBoard _gameBoard;
 
     private float _lastTime;
     private int _objectValue = 1; // The value representing the object in the logical matrix
@@ -29,14 +29,8 @@ public class SandController : MonoBehaviour
 
     public int[,] LogicalMatrix => GameBoard.LogicalMatrix;
 
-    private GameBoard GameBoard
-    {
-        get
-        {
-            if (!_gameBoard) _gameBoard = FindObjectOfType<GameBoard>();
-            return _gameBoard;
-        }
-    }
+    private GameBoard GameBoard => GameBoard.Instance;
+
 
     public Transform[,] OnBoardVirtualPositionGrid => GameBoard.OnBoardVirtualPositionGrid;
     public Transform[,] QueueVirtualPosititonGrid;
@@ -46,7 +40,6 @@ public class SandController : MonoBehaviour
         get => _position;
         private set => _position = value;
     }
-
 
     private void Start()
     {
@@ -297,6 +290,16 @@ public class SandController : MonoBehaviour
         GameBoard.UpdateLogicalMatrix(Position, Position,
             0);
         GameBoard.UpdateSandMatrix(null, Position);
-        Destroy(gameObject);
+        gameObject.SetActive(false);
+    }
+
+    public void SetSandIndex(int index)
+    {
+        _index = index;
+    }
+
+    public int GetSandIndex()
+    {
+        return _index;
     }
 }
