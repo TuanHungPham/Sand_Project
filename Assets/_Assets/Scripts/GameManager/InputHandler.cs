@@ -6,7 +6,43 @@ public class InputHandler : MonoBehaviour
     [SerializeField] private GameBoard _gameBoard;
     [SerializeField] private SandSpawner _sandSpawner;
     [SerializeField] private QueueSandBlock _currentSelectedQueueSandBlock;
+    [SerializeField] private int targetColumn = -1;
     [SerializeField] private bool _isMouseHolding;
+
+    private GameBoard GameBoard => GameBoard.Instance;
+
+    private float MaxBoardLength
+    {
+        get
+        {
+            int maxRow = GameBoard.OnBoardRow - 1;
+            int maxColumn = GameBoard.OnBoardColumn - 1;
+
+            return GameBoard.OnBoardVirtualPositionGrid[maxRow, maxColumn].position.y;
+        }
+    }
+
+    private float MaxBoardWidth
+    {
+        get
+        {
+            int maxRow = GameBoard.OnBoardRow - 1;
+            int maxColumn = GameBoard.OnBoardColumn - 1;
+
+            return GameBoard.OnBoardVirtualPositionGrid[maxRow, maxColumn].position.x;
+        }
+    }
+
+    private float MinBoardWidth
+    {
+        get
+        {
+            int maxRow = GameBoard.OnBoardRow - 1;
+            int maxColumn = 0;
+
+            return GameBoard.OnBoardVirtualPositionGrid[maxRow, maxColumn].position.x;
+        }
+    }
 
     private void Update()
     {
@@ -23,29 +59,34 @@ public class InputHandler : MonoBehaviour
         }
     }
 
-    private void CheckOnBoardPosition()
+    public void CheckOnBoardPosition()
     {
         if (!_isMouseHolding) return;
 
-        DragBlock(_mousePos);
+        DragBlock();
         GetOnBoardColumnByMousePos();
     }
 
-    private void GetMousePos()
+    public void GetMousePos()
     {
         _mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         _mousePos.z = 0;
     }
 
-    private void DragBlock(Vector3 pos)
+    public void DragBlock()
     {
+        Debug.Log($"(INPUT) HOLD MOUSE BUTTON");
+
         if (_currentSelectedQueueSandBlock == null) return;
-        _currentSelectedQueueSandBlock.BeDragged(pos);
+        _currentSelectedQueueSandBlock.BeDragged(_mousePos);
     }
 
-    private void ClickLeftMouse()
+    public void ClickLeftMouse()
     {
+        Debug.Log($"(INPUT) CLICK MOUSE BUTTON");
+
         _isMouseHolding = true;
+        GetMousePos();
 
         foreach (var sandBlock in _sandSpawner.GetQueueSandBlockList())
         {
@@ -60,8 +101,9 @@ public class InputHandler : MonoBehaviour
         _currentSelectedQueueSandBlock = null;
     }
 
-    private void ReleaseLeftMouse()
+    public void ReleaseLeftMouse()
     {
+        Debug.Log($"(INPUT) RELEASE MOUSE BUTTON");
         _isMouseHolding = false;
 
         if (_currentSelectedQueueSandBlock == null) return;
@@ -69,8 +111,17 @@ public class InputHandler : MonoBehaviour
         _currentSelectedQueueSandBlock = null;
     }
 
-    private void GetOnBoardColumnByMousePos()
+    public void GetOnBoardColumnByMousePos()
     {
-        Debug.Log($"(INPUT) Column get by mouse: {_gameBoard.GetOnBoardColumnByPosition(_mousePos)}");
+        if (_mousePos.y < MaxBoardLength)
+        {
+            targetColumn = -1;
+            return;
+        }
+
+        if (_mousePos.x > MaxBoardWidth || _mousePos.x < MinBoardWidth) return;
+
+        targetColumn = _gameBoard.GetOnBoardColumnByPosition(_mousePos);
+        Debug.Log($"(INPUT) Column get by mouse: {targetColumn}");
     }
 }

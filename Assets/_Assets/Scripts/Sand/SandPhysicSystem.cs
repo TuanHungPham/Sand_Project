@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SandPhysicSystem : MonoBehaviour
+public class SandPhysicSystem : TemporaryMonoSingleton<SandPhysicSystem>
 {
     [SerializeField] private bool _shouldMoveHorizontally;
 
@@ -11,16 +11,9 @@ public class SandPhysicSystem : MonoBehaviour
 
     private GameBoard _gameBoard;
 
-    public GameBoard GameBoard
-    {
-        get
-        {
-            if (!_gameBoard)
-                _gameBoard = FindObjectOfType<GameBoard>();
-            return _gameBoard;
-        }
-        private set => _gameBoard = value;
-    }
+    public Vector2Int movingDirection;
+
+    public GameBoard GameBoard => GameBoard.Instance;
 
     private int Row => GameBoard.OnBoardRow;
     private int Column => GameBoard.OnBoardColumn;

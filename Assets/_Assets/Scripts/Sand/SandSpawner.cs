@@ -86,7 +86,7 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
             _shouldCreateNewSand = false;
         }
 
-        CheckCreateNewSand();
+        CheckCreateNewQueueSand();
     }
 
     private void Init()
@@ -160,16 +160,16 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
         for (var i = 0; i < numberOfSands; i++) CreateNewSandRandomly();
     }
 
-    private void UpdateSands()
-    {
-        if (!HasPastInterval())
-            return;
-        foreach (var sand in SandsDictionary) sand.Key.CheckMoveDown();
-        foreach (var sand in SandsDictionary) sand.Key.CheckMoveDiagonally();
-    }
+    // private void UpdateSands()
+    // {
+    //     if (!HasPastInterval())
+    //         return;
+    //     foreach (var sand in SandsDictionary) sand.Key.CheckMoveDown();
+    //     foreach (var sand in SandsDictionary) sand.Key.CheckMoveDiagonally();
+    // }
 
 
-    private void CheckCreateNewSand()
+    private void CheckCreateNewQueueSand()
     {
         if (_shouldCreateNewSand)
         {

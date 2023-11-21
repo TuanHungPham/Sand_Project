@@ -19,7 +19,6 @@ public class SandController : MonoBehaviour
     [SerializeField] private SpriteRenderer _renderer;
     [SerializeField] private eSandType _sandType;
     [SerializeField] private bool _isQueueSand;
-    [SerializeField] private int _index;
     private int _emptyValue; // The value representing an empty position in the logical matrix
 
     private float _lastTime;
@@ -97,25 +96,25 @@ public class SandController : MonoBehaviour
         Log($"position: ({row} - {column}) - {LogicalMatrix[column, column]}");
     }
 
-    private void Move()
-    {
-        // Check if there is an empty position below in the logical matrix
-        var exPosition = Position;
-        if (Position.x <= 0)
-        {
-            Log("cannot move - 0");
-            return;
-        }
-
-        HasMoved = false;
-
-        if (CanMoveDown())
-            MoveDown();
-        else
-            MoveDiagonally();
-
-        UpdateBoardMatrix(exPosition);
-    }
+    // private void Move()
+    // {
+    //     // Check if there is an empty position below in the logical matrix
+    //     var exPosition = Position;
+    //     if (Position.x <= 0)
+    //     {
+    //         Log("cannot move - 0");
+    //         return;
+    //     }
+    //
+    //     HasMoved = false;
+    //
+    //     if (CanMoveDown())
+    //         MoveDown();
+    //     else
+    //         MoveDiagonally();
+    //
+    //     UpdateBoardMatrix(exPosition);
+    // }
 
     public void CheckMoveDown()
     {
@@ -291,15 +290,5 @@ public class SandController : MonoBehaviour
             0);
         GameBoard.UpdateSandMatrix(null, Position);
         gameObject.SetActive(false);
-    }
-
-    public void SetSandIndex(int index)
-    {
-        _index = index;
-    }
-
-    public int GetSandIndex()
-    {
-        return _index;
     }
 }
