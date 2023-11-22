@@ -284,11 +284,14 @@ public class SandController : MonoBehaviour
         transform.parent = newParent;
     }
 
-    public void Destroy()
+    public void DestroySand()
     {
-        GameBoard.UpdateLogicalMatrix(Position, Position,
-            0);
-        GameBoard.UpdateSandMatrix(null, Position);
+        if (!_isQueueSand)
+        {
+            GameBoard.UpdateLogicalMatrix(Position, Position, 0);
+            GameBoard.UpdateSandMatrix(null, Position);
+        }
+
         gameObject.SetActive(false);
     }
 }

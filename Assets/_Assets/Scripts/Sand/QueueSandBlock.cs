@@ -1,16 +1,27 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class QueueSandBlock : MonoBehaviour
 {
     private Shape _shape;
-    [SerializeField] private Vector3 _initialPosition;
     [SerializeField] private float _interactingRadius;
-    [SerializeField] private List<SandController> _sandList = new List<SandController>();
+    [SerializeField] private Vector3 _initialPosition;
+    [SerializeField] private QueueBlockSpawner _queueBlockSpawner;
+    [SerializeField] private bool _isEmpty;
+
+    private void Awake()
+    {
+        LoadComponents();
+    }
+
+    private void LoadComponents()
+    {
+        _queueBlockSpawner = GetComponentInChildren<QueueBlockSpawner>();
+    }
 
     private void Start()
     {
         Initialize();
+        SpawnQueueSandBlock();
     }
 
     private void Initialize()
@@ -18,13 +29,11 @@ public class QueueSandBlock : MonoBehaviour
         _initialPosition = transform.position;
     }
 
-    public void AddSandToQueueBlock(SandController sandController)
+    public void DropBlockToBoard()
     {
-        _sandList.Add(sandController);
-    }
-
-    public void ReleaseBlockToBoard()
-    {
+        _queueBlockSpawner.DestroyQueueSand();
+        _shape = null;
+        _isEmpty = true;
     }
 
     public void ResetBlockPosition()
@@ -45,10 +54,10 @@ public class QueueSandBlock : MonoBehaviour
         transform.position = position;
     }
 
-    private void OnDrawGizmos()
+    public void SpawnQueueSandBlock()
     {
-        Gizmos.DrawCube(transform.position, new Vector3(_interactingRadius, _interactingRadius, _interactingRadius));
-        Gizmos.color = Color.white;
+        _queueBlockSpawner.CreateQueueVirtualShape();
+        _isEmpty = false;
     }
 
     public void SetShape(Shape shape)
@@ -59,5 +68,16 @@ public class QueueSandBlock : MonoBehaviour
     public Shape GetShape()
     {
         return _shape;
+    }
+
+    public bool IsEmpty()
+    {
+        return _isEmpty;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawCube(transform.position, new Vector3(_interactingRadius, _interactingRadius, _interactingRadius));
+        Gizmos.color = Color.white;
     }
 }

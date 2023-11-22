@@ -1,12 +1,15 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class QueueBlockSpawner : MonoBehaviour
 {
+    [SerializeField] private int _objectValue = 1;
     [SerializeField] private QueueSandBlock _queueSandBlock;
     [SerializeField] private SandController _sandPfb;
     [SerializeField] private Transform _sandRoot;
-    [SerializeField] private int _objectValue = 1;
     [SerializeField] private PositionGridView _positionGridView;
+    [SerializeField] private List<SandController> _queueSandList = new List<SandController>();
     private Transform[,] queueVirtualPositionGrid;
     private int _queueRow;
     private int _queueColumn;
@@ -23,11 +26,6 @@ public class QueueBlockSpawner : MonoBehaviour
         _queueSandBlock = GetComponentInParent<QueueSandBlock>();
     }
 
-    private void Start()
-    {
-        CreateQueueVirtualShape(1);
-    }
-
     private void InitQueueVirtualMatrix()
     {
         var positionGrid = _positionGridView.positionGrid;
@@ -42,7 +40,7 @@ public class QueueBlockSpawner : MonoBehaviour
     }
 
 
-    public void CreateQueueVirtualShape(int startColumn)
+    public void CreateQueueVirtualShape(int startColumn = 1)
     {
         var shape = _queueSandBlock.GetShape();
 
@@ -61,7 +59,17 @@ public class QueueBlockSpawner : MonoBehaviour
         sand.gameObject.SetActive(true);
 
         sand.SetData(row, column, _objectValue, true, queueVirtualPositionGrid);
+        _queueSandList.Add(sand);
 
         return sand;
+    }
+
+    public void DestroyQueueSand()
+    {
+        for (int i = _queueSandList.Count - 1; i >= 0; i--)
+        {
+            _queueSandList[i].DestroySand();
+            _queueSandList.RemoveAt(i);
+        }
     }
 }

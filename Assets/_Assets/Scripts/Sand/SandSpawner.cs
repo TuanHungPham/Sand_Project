@@ -5,9 +5,8 @@ using Random = UnityEngine.Random;
 public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
 {
     [Header("In Game Sand Block")] [SerializeField]
-    private int _startColumn;
+    private bool _shouldLog;
 
-    [SerializeField] private bool _shouldLog;
     [SerializeField] private int _objectValue = 1;
     [SerializeField] private SandController _sandPfb;
     [SerializeField] private Transform _sandRoot;
@@ -17,7 +16,7 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
     [Space(20)] [Header("In Queue Sand Block")] [SerializeField]
     private bool _shouldCreateNewSand;
 
-    [SerializeField] private QueueSandBlock _queueSandBlock;
+    [SerializeField] private QueueSandBlock _queueSandBlockPrefab;
     [SerializeField] private Transform _sandQueue;
     [SerializeField] private List<QueueSandBlock> _queueSandBlockList = new List<QueueSandBlock>();
     [SerializeField] private QueuePointManager _queuePointManager;
@@ -69,11 +68,6 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
         }
     }
 
-    private void Start()
-    {
-        Init();
-    }
-
     // Update is called once per frame
     private void Update()
     {
@@ -89,16 +83,11 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
         CheckCreateNewQueueSand();
     }
 
-    private void Init()
-    {
-        _startColumn = OnBoardColumn / 2;
-    }
-
     private void CreateQueueSand()
     {
         foreach (Transform point in _queuePointManager.GetPointList())
         {
-            QueueSandBlock queueSandBlock = Instantiate(_queueSandBlock, _sandQueue, true);
+            QueueSandBlock queueSandBlock = Instantiate(_queueSandBlockPrefab, _sandQueue, true);
             queueSandBlock.transform.position = point.position;
             queueSandBlock.SetShape(ShapeReader.GetShape());
 
@@ -172,6 +161,11 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
 
     private void CheckCreateNewQueueSand()
     {
+        if (_queueSandBlockList.Count <= 0)
+        {
+            _shouldCreateNewSand = true;
+        }
+
         if (_shouldCreateNewSand)
         {
             _shouldCreateNewSand = false;
@@ -193,7 +187,7 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
     public void DestroySand(SandController sand)
     {
         SandsDictionary.Remove(sand);
-        sand.Destroy();
+        sand.DestroySand();
     }
 
     private void Log(string message)
@@ -215,6 +209,18 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
                 continue;
             var sand = CreateNewSand(OnBoardRow - i - 1, j + _startColumn);
         }
+    }
+
+    public void CreateNewOnBoardSand(int startColumn, QueueSandBlock queueSandBlock)
+    {
+        var shape = queueSandBlock.GetShape();
+
+        CreateOnBoardVirtualShape(shape, startColumn);
+
+        queueSandBlock.DropBlockToBoard();
+        queueSandBlock.ResetBlockPosition();
+
+        _queueSandBlockList.Remove(queueSandBlock);
     }
 
     public List<QueueSandBlock> GetQueueSandBlockList()

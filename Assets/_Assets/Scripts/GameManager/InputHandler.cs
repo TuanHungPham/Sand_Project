@@ -91,7 +91,7 @@ public class InputHandler : MonoBehaviour
 
         foreach (var sandBlock in _sandSpawner.GetQueueSandBlockList())
         {
-            if (!sandBlock.CanInteract(_mousePos)) continue;
+            if (!sandBlock.CanInteract(_mousePos) || sandBlock.IsEmpty()) continue;
 
             _currentSelectedQueueSandBlock = sandBlock;
             Debug.Log($"(INPUT) You have just interacted with {sandBlock.gameObject.name}");
@@ -116,8 +116,7 @@ public class InputHandler : MonoBehaviour
         }
         else
         {
-            SandSpawner.CreateOnBoardVirtualShape(_currentSelectedQueueSandBlock.GetShape(), targetColumn);
-            _currentSelectedQueueSandBlock.ResetBlockPosition();
+            SandSpawner.CreateNewOnBoardSand(targetColumn, _currentSelectedQueueSandBlock);
             _currentSelectedQueueSandBlock = null;
         }
     }
