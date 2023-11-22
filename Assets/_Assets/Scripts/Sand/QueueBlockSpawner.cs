@@ -1,9 +1,8 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class QueueBlockSpawner : MonoBehaviour
 {
+    [SerializeField] private QueueSandBlock _queueSandBlock;
     [SerializeField] private SandController _sandPfb;
     [SerializeField] private Transform _sandRoot;
     [SerializeField] private int _objectValue = 1;
@@ -13,21 +12,15 @@ public class QueueBlockSpawner : MonoBehaviour
     private int _queueColumn;
     private ShapeReader _shapeReader;
 
-    public ShapeReader ShapeReader
-    {
-        get
-        {
-            if (!_shapeReader)
-                _shapeReader = FindObjectOfType<ShapeReader>();
-            return _shapeReader;
-        }
-        private set => _shapeReader = value;
-    }
-
-
     private void Awake()
     {
+        LoadComponents();
         InitQueueVirtualMatrix();
+    }
+
+    private void LoadComponents()
+    {
+        _queueSandBlock = GetComponentInParent<QueueSandBlock>();
     }
 
     private void Start()
@@ -51,7 +44,7 @@ public class QueueBlockSpawner : MonoBehaviour
 
     public void CreateQueueVirtualShape(int startColumn)
     {
-        var shape = ShapeReader.GetShape();
+        var shape = _queueSandBlock.GetShape();
 
         for (var j = 0; j < shape.Column; j++)
         for (var i = shape.Row - 1; i >= 0; i--)
