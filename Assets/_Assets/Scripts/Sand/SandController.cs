@@ -19,6 +19,8 @@ public class SandController : MonoBehaviour
 
     [SerializeField] private SpriteRenderer _renderer;
     [SerializeField] private eSandType _sandType;
+    [SerializeField] private Region _currentRegion;
+    [SerializeField] private bool _isMoving;
     [SerializeField] private bool _isQueueSand;
     private int _emptyValue; // The value representing an empty position in the logical matrix
 
@@ -39,6 +41,11 @@ public class SandController : MonoBehaviour
     {
         get => _position;
         private set => _position = value;
+    }
+
+    public void SetCurrentRegion(Region region)
+    {
+        _currentRegion = region;
     }
 
     public void SetData(int currentRow, int currentColumn, int objectValue)
@@ -115,7 +122,12 @@ public class SandController : MonoBehaviour
     //         MoveDiagonally();
     //
     //     UpdateBoardMatrix(exPosition);
-    // }
+
+
+    public void UpdateRegion()
+    {
+        _currentRegion.SetMovingState(true);
+    }
 
     public void CheckMoveDown()
     {
@@ -131,8 +143,16 @@ public class SandController : MonoBehaviour
 
         if (CanMoveDown())
         {
+            _isMoving = true;
+
+            UpdateRegion();
+
             MoveDown();
             UpdateBoardMatrix(exPosition);
+        }
+        else
+        {
+            _isMoving = false;
         }
     }
 
@@ -171,7 +191,16 @@ public class SandController : MonoBehaviour
         }
 
         if (canMoveLeft || canMoveRight)
+        {
+            _isMoving = true;
+            UpdateRegion();
+
             UpdateBoardMatrix(exPosition);
+        }
+        else
+        {
+            _isMoving = false;
+        }
     }
 
 
@@ -294,6 +323,10 @@ public class SandController : MonoBehaviour
         }
 
         EasyObjectPool.ReturnObjectToPool(gameObject);
-        // gameObject.SetActive(false);
+    }
+
+    public bool IsMoving()
+    {
+        return _isMoving;
     }
 }

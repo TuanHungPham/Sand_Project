@@ -7,6 +7,7 @@ public class Region
 {
     public int Label;
     public List<Vector2Int> _points;
+    public bool isMoving;
 
     public Region(int label)
     {
@@ -14,6 +15,11 @@ public class Region
         Left = int.MaxValue;
         Right = int.MinValue;
         _points = new List<Vector2Int>();
+    }
+
+    public void SetMovingState(bool set)
+    {
+        isMoving = set;
     }
 
     public string Name => ToString();
