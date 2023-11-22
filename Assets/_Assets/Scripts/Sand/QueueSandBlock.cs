@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using MarchingBytes;
+using UnityEngine;
 
 public class QueueSandBlock : MonoBehaviour
 {
@@ -7,6 +9,8 @@ public class QueueSandBlock : MonoBehaviour
     [SerializeField] private Vector3 _initialPosition;
     [SerializeField] private QueueBlockSpawner _queueBlockSpawner;
     [SerializeField] private bool _isEmpty;
+
+    private EasyObjectPool EasyObjectPool => EasyObjectPool.instance;
 
     private void Awake()
     {
@@ -18,15 +22,9 @@ public class QueueSandBlock : MonoBehaviour
         _queueBlockSpawner = GetComponentInChildren<QueueBlockSpawner>();
     }
 
-    private void Start()
+    public void SetInitialPosition(Vector3 position)
     {
-        Initialize();
-        SpawnQueueSandBlock();
-    }
-
-    private void Initialize()
-    {
-        _initialPosition = transform.position;
+        _initialPosition = position;
     }
 
     public void DropBlockToBoard()
@@ -34,6 +32,7 @@ public class QueueSandBlock : MonoBehaviour
         _queueBlockSpawner.DestroyQueueSand();
         _shape = null;
         _isEmpty = true;
+        EasyObjectPool.ReturnObjectToPool(gameObject);
     }
 
     public void ResetBlockPosition()
@@ -63,6 +62,7 @@ public class QueueSandBlock : MonoBehaviour
     public void SetShape(Shape shape)
     {
         _shape = shape;
+        SpawnQueueSandBlock();
     }
 
     public Shape GetShape()

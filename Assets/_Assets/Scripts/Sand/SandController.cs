@@ -1,3 +1,4 @@
+using MarchingBytes;
 using UnityEngine;
 
 public enum eSandType
@@ -29,7 +30,7 @@ public class SandController : MonoBehaviour
     public int[,] LogicalMatrix => GameBoard.LogicalMatrix;
 
     private GameBoard GameBoard => GameBoard.Instance;
-
+    private EasyObjectPool EasyObjectPool => EasyObjectPool.instance;
 
     public Transform[,] OnBoardVirtualPositionGrid => GameBoard.OnBoardVirtualPositionGrid;
     public Transform[,] QueueVirtualPosititonGrid;
@@ -40,17 +41,15 @@ public class SandController : MonoBehaviour
         private set => _position = value;
     }
 
-    private void Start()
-    {
-        Init();
-    }
-
     public void SetData(int currentRow, int currentColumn, int objectValue)
     {
         _position.x = currentRow;
         _position.y = currentColumn;
         _objectValue = objectValue;
         _sandType = (eSandType)objectValue;
+        _isQueueSand = false;
+
+        Init();
     }
 
     public void SetData(int currentRow, int currentColumn, int objectValue, bool isQueueSand, Transform[,] queueGrid)
@@ -61,6 +60,8 @@ public class SandController : MonoBehaviour
         _sandType = (eSandType)objectValue;
         _isQueueSand = isQueueSand;
         QueueVirtualPosititonGrid = queueGrid;
+
+        Init();
     }
 
     private void Init()
@@ -292,6 +293,7 @@ public class SandController : MonoBehaviour
             GameBoard.UpdateSandMatrix(null, Position);
         }
 
-        gameObject.SetActive(false);
+        EasyObjectPool.ReturnObjectToPool(gameObject);
+        // gameObject.SetActive(false);
     }
 }

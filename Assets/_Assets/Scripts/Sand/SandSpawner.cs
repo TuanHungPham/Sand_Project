@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MarchingBytes;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -31,6 +32,7 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
 
     private GameBoard GameBoard => GameBoard.Instance;
     private SandMatrix SandMatrix => GameBoard.SandMatrix;
+    private EasyObjectPool EasyObjectPool => EasyObjectPool.instance;
 
     private int OnBoardRow => GameBoard.OnBoardRow;
     private int OnBoardColumn => GameBoard.OnBoardColumn;
@@ -87,9 +89,15 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
     {
         foreach (Transform point in _queuePointManager.GetPointList())
         {
-            QueueSandBlock queueSandBlock = Instantiate(_queueSandBlockPrefab, _sandQueue, true);
-            queueSandBlock.transform.position = point.position;
+            var pointPosition = point.position;
+
+            var queueBlock = EasyObjectPool.GetObjectFromPool(PoolName.QUEUE_SAND_BLOCK, Vector3.one, Quaternion.identity);
+            queueBlock.transform.SetParent(_sandQueue);
+            queueBlock.transform.position = pointPosition;
+
+            QueueSandBlock queueSandBlock = queueBlock.GetComponent<QueueSandBlock>();
             queueSandBlock.SetShape(ShapeReader.GetShape());
+            queueSandBlock.SetInitialPosition(pointPosition);
 
             _queueSandBlockList.Add(queueSandBlock);
         }
@@ -108,16 +116,20 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
 
     private SandController CreateNewSand(int row, int column, bool isQueueBlock = false)
     {
-        var sand = Instantiate(_sandPfb, _sandRoot);
-        sand.gameObject.SetActive(true);
+        var sand = EasyObjectPool.GetObjectFromPool(PoolName.SAND_POOL, Vector3.one, Quaternion.identity);
+        sand.transform.SetParent(_sandRoot);
+
+        SandController sandController = sand.GetComponent<SandController>();
+        // var sand = Instantiate(_sandPfb, _sandRoot);
+        // sand.gameObject.SetActive(true);
 
         if (!isQueueBlock)
         {
-            sand.SetData(row, column, _objectValue);
-            AddSand(sand);
+            sandController.SetData(row, column, _objectValue);
+            AddSand(sandController);
         }
 
-        return sand;
+        return sandController;
     }
 
     private void AddSand(SandController sand)

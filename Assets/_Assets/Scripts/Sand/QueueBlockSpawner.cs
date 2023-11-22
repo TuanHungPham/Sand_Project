@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using MarchingBytes;
 using UnityEngine;
 
 public class QueueBlockSpawner : MonoBehaviour
@@ -14,6 +15,7 @@ public class QueueBlockSpawner : MonoBehaviour
     private int _queueRow;
     private int _queueColumn;
     private ShapeReader _shapeReader;
+    private EasyObjectPool EasyObjectPool => EasyObjectPool.instance;
 
     private void Awake()
     {
@@ -55,13 +57,16 @@ public class QueueBlockSpawner : MonoBehaviour
 
     private SandController CreateNewSand(int row, int column)
     {
-        var sand = Instantiate(_sandPfb, _sandRoot);
+        var sand = EasyObjectPool.GetObjectFromPool(PoolName.SAND_POOL, Vector3.zero, Quaternion.identity);
+        sand.transform.SetParent(_sandRoot);
         sand.gameObject.SetActive(true);
 
-        sand.SetData(row, column, _objectValue, true, queueVirtualPositionGrid);
-        _queueSandList.Add(sand);
+        SandController sandController = sand.GetComponent<SandController>();
 
-        return sand;
+        sandController.SetData(row, column, _objectValue, true, queueVirtualPositionGrid);
+        _queueSandList.Add(sandController);
+
+        return sandController;
     }
 
     public void DestroyQueueSand()
