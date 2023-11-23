@@ -142,7 +142,7 @@ public class GameBoard : TemporaryMonoSingleton<GameBoard>
         for (int i = 0; i < OnBoardVirtualPositionGrid.GetLength(1); i++)
         {
             float distance = position.x - OnBoardVirtualPositionGrid[0, i].position.x;
-            if (distance > 0.5f)
+            if (distance > 0.05f)
                 continue;
             return i;
         }
