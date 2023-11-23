@@ -45,7 +45,7 @@ public class QueueBlockSpawner : MonoBehaviour
 
     public void CreateQueueVirtualShape()
     {
-        var shape = ShapeReader.GetShape();
+        var shape = _queueSandBlock.GetShape();
         FindStartSpawningPosition(shape, out var startRow, out var startColumn);
 
         for (var j = 0; j < shape.Column; j++)
