@@ -79,7 +79,6 @@ public class RegionGrouper : TemporaryMonoSingleton<RegionGrouper>
             return;
 
         CheckMovingRegion();
-        CollectLineRegions();
 
         CheckGroupRegion();
     }
@@ -121,7 +120,7 @@ public class RegionGrouper : TemporaryMonoSingleton<RegionGrouper>
             var group = _regions[i];
             var message = new StringBuilder();
             message.AppendLine($"Region: {i} - {group.Color}");
-            foreach (var point in group.Points) message.AppendLine($"Position: ({point.x} {point.y})");
+            foreach (var point in group.SandsInRegion) message.AppendLine($"Position: ({point.Value.Position.x} {point.Value.Position.y})");
             Log(message.ToString());
         }
     }
@@ -172,9 +171,9 @@ public class RegionGrouper : TemporaryMonoSingleton<RegionGrouper>
 
     private void GroupVirtualRegion(Region region, VirtualRegion virtualRegion)
     {
-        foreach (var position in region.Points)
+        foreach (var position in region.SandsInRegion)
         {
-            var sand = SandSpawner.GetSandAt(position);
+            var sand = position.Value;
             if (sand == null)
             {
                 Debug.Log("SAND NULLLLLLLLLLLLLLLLLLLLL");
@@ -306,6 +305,9 @@ public class RegionGrouper : TemporaryMonoSingleton<RegionGrouper>
             if (!region.isMoving || region.IsInShaped()) continue;
 
             ReGroupRegions(region);
+            region.UpdateRegionMargin();
+
+            CollectLineRegions();
         }
     }
 
@@ -316,17 +318,6 @@ public class RegionGrouper : TemporaryMonoSingleton<RegionGrouper>
         _rowCount = GetRows(Matrix);
         _colCount = GetColumns(Matrix);
         _visited = new bool[_rowCount, _colCount];
-
-        // for (var i = 0; i < _rowCount; i++)
-        // for (var j = 0; j < _colCount; j++)
-        //     if (!_visited[i, j] && Matrix[i, j] != 0)
-        //     {
-        //         var label = inputMatrix[i, j];
-        //         var group = new Region(label);
-        //         Dfs(i, j, group);
-        //         _regions.Add(group);
-        //         _groupCount++;
-        //     }
 
         for (int i = 0; i < region.SandsInRegion.Count; i++)
         {

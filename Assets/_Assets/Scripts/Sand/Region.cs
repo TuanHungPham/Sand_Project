@@ -7,10 +7,11 @@ public class Region
 {
     public int name;
     public int Label;
-    public List<Vector2Int> _points;
     public bool isMoving;
     private Dictionary<int, SandController> _sandsInRegion;
     [SerializeField] private bool _isInShape;
+    [SerializeField] private int left;
+    [SerializeField] private int right;
 
     private GameBoard GameBoard => GameBoard.Instance;
     private Dictionary<SandController, SandController> movingSandInRegion;
@@ -19,9 +20,8 @@ public class Region
     {
         name = GetHashCode();
         Label = label;
-        Left = int.MaxValue;
-        Right = int.MinValue;
-        _points = new List<Vector2Int>();
+        left = int.MaxValue;
+        right = int.MinValue;
         _sandsInRegion = new Dictionary<int, SandController>();
         movingSandInRegion = new Dictionary<SandController, SandController>();
     }
@@ -50,12 +50,20 @@ public class Region
 
     public string Color => Label.ToColorString();
 
-    public List<Vector2Int> Points => _points;
+    // public List<Vector2Int> Points => _points;
     public Dictionary<int, SandController> SandsInRegion => _sandsInRegion;
 
-    public int Left { get; private set; }
+    public int Left
+    {
+        get => left;
+        private set => left = value;
+    }
 
-    public int Right { get; private set; }
+    public int Right
+    {
+        get => right;
+        private set => right = value;
+    }
 
     public Dictionary<SandController, SandController> MovingSandInRegion => movingSandInRegion;
 
@@ -69,6 +77,19 @@ public class Region
 
         var sand = GameBoard.At(newPoint);
         SandsInRegion.Add(SandsInRegion.Count, sand);
+    }
+
+    public void UpdateRegionMargin()
+    {
+        foreach (var sand in SandsInRegion)
+        {
+            var position = sand.Value.Position;
+
+            if (position.y < Left)
+                Left = position.y;
+            if (position.y > Right)
+                Right = position.y;
+        }
     }
 
     public void RemovePoint(SandController sandController)
@@ -110,7 +131,7 @@ public class Region
     {
         if (obj is Region region)
             return region.Label == Label && region.Left == Left && region.Right == Right &&
-                   region.Points.Count == Points.Count;
+                   region.SandsInRegion.Count == SandsInRegion.Count;
 
         return false;
     }
