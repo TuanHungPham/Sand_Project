@@ -1282,9 +1282,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09fde6d4a22047f9a0e3dcd896dd4fef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _initialPosition: {x: 0, y: 0, z: 0}
   _interactingRadius: 1
-  _sandList: []
+  _initialPosition: {x: 0, y: 0, z: 0}
+  _queueBlockSpawner: {fileID: 0}
+  _isEmpty: 0
 --- !u!1 &501175381210237314
 GameObject:
   m_ObjectHideFlags: 0
@@ -14979,10 +14980,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 830e44e9b4cd1d3478412844b50f1d38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _objectValue: 1
+  _queueSandBlock: {fileID: 0}
   _sandPfb: {fileID: 4662145090647160, guid: 99a6f1ebbdd41ad4cbdbfdc2749cdea2, type: 3}
   _sandRoot: {fileID: 4422611184688352506}
-  _objectValue: 1
   _positionGridView: {fileID: 1421156247031566225}
+  _queueSandList: []
 --- !u!1 &6645281877336653924
 GameObject:
   m_ObjectHideFlags: 0

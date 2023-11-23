@@ -73,8 +73,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  m_SortingOrder: 10
+  m_Sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -97,9 +97,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b15165727593242abad7b338c88b7d49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 100
   _position: {x: 0, y: 0}
-  _interval: 20
   _shouldLog: 0
   _renderer: {fileID: 4662145090647161}
   _sandType: 3
+  _currentRegion:
+    name: 0
+    Label: 0
+    isMoving: 0
+    _isInShape: 0
+    left: 0
+    right: 0
+  _isMoving: 0
+  _isQueueSand: 0
