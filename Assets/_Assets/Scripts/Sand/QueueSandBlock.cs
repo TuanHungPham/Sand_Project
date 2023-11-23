@@ -10,6 +10,7 @@ public class QueueSandBlock : MonoBehaviour
     [SerializeField] private QueueBlockSpawner _queueBlockSpawner;
     [SerializeField] private bool _isEmpty;
 
+    private GameBoard GameBoard => GameBoard.Instance;
     private EasyObjectPool EasyObjectPool => EasyObjectPool.instance;
 
     private void Awake()
@@ -54,7 +55,28 @@ public class QueueSandBlock : MonoBehaviour
         return true;
     }
 
-    public void BeDragged(Vector3 position)
+    public void BeDragged(Vector3 position, int column)
+    {
+        if (column == -1)
+        {
+            FollowMousePos(position);
+            return;
+        }
+
+        FollowColumnPos(column);
+    }
+
+    private void FollowColumnPos(int column)
+    {
+        var maxRow = GameBoard.OnBoardRow;
+        var shape_middlePoint = _shape.GetMiddlePointOfShape();
+
+        Transform pos = GameBoard.OnBoardVirtualPositionGrid[maxRow - shape_middlePoint.x - 1, column];
+
+        transform.position = pos.position;
+    }
+
+    private void FollowMousePos(Vector3 position)
     {
         transform.position = position;
     }

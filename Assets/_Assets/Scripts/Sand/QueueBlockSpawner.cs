@@ -64,9 +64,6 @@ public class QueueBlockSpawner : MonoBehaviour
 
         var grid_middlePoint = new Vector2Int(_queueRow / 2, _queueColumn / 2);
 
-        Debug.Log($"(SPAWN) Middle Point of Shape: [{shape_middlePoint.x},{shape_middlePoint.y}] --- [{shape.Row - 1},{shape.Column - 1}]");
-        Debug.Log($"(SPAWN) Middle Point of Grid: [{grid_middlePoint.x},{grid_middlePoint.y}] --- [{_queueRow - 1},{_queueColumn - 1}]");
-
         startRow = grid_middlePoint.x + shape_middlePoint.x;
         startColumn = grid_middlePoint.y - shape_middlePoint.y;
     }

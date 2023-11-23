@@ -78,7 +78,7 @@ public class InputHandler : MonoBehaviour
         Debug.Log($"(INPUT) HOLD MOUSE BUTTON");
 
         if (_currentSelectedQueueSandBlock == null) return;
-        _currentSelectedQueueSandBlock.BeDragged(_mousePos);
+        _currentSelectedQueueSandBlock.BeDragged(_mousePos, targetColumn);
     }
 
     public void ClickLeftMouse()
@@ -116,6 +116,7 @@ public class InputHandler : MonoBehaviour
         else
         {
             SandSpawner.CreateNewOnBoardSand(targetColumn, _currentSelectedQueueSandBlock, _currentSelectedQueueSandBlock.GetObjectValue());
+            targetColumn = -1;
             _currentSelectedQueueSandBlock = null;
         }
     }

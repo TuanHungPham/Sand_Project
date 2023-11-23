@@ -111,7 +111,6 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
         Region region = new Region(objectValue);
 
         int startColumn = _startColumn - shape.GetMiddlePointOfShape().y;
-        // int startColumn = _startColumn;
 
         for (var j = 0; j < shape.Column; j++)
         for (var i = shape.Row - 1; i >= 0; i--)
@@ -119,7 +118,6 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
             if (shape.Matrix[i, j] == 0)
                 continue;
 
-            if (j == shape.GetMiddlePointOfShape().y) continue;
             var sand = CreateNewSand(OnBoardRow - i - 1, j + startColumn, objectValue);
 
             region.AddPoint(new Vector2Int(OnBoardRow - i - 1, j + startColumn));
