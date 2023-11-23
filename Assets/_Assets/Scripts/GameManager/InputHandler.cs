@@ -3,7 +3,6 @@ using UnityEngine;
 public class InputHandler : MonoBehaviour
 {
     [SerializeField] private Vector3 _mousePos;
-    [SerializeField] private GameBoard _gameBoard;
     [SerializeField] private SandSpawner _sandSpawner;
     [SerializeField] private QueueSandBlock _currentSelectedQueueSandBlock;
     [SerializeField] private int targetColumn = -1;
@@ -123,7 +122,7 @@ public class InputHandler : MonoBehaviour
 
     public void GetOnBoardColumnByMousePos()
     {
-        if (_mousePos.y < MaxBoardLength)
+        if (_mousePos.y < MaxBoardLength || _currentSelectedQueueSandBlock == null)
         {
             targetColumn = -1;
             return;
@@ -131,7 +130,36 @@ public class InputHandler : MonoBehaviour
 
         if (_mousePos.x > MaxBoardWidth || _mousePos.x < MinBoardWidth) return;
 
-        targetColumn = _gameBoard.GetOnBoardColumnByPosition(_mousePos);
+        targetColumn = LimitTargetColumn();
+
         Debug.Log($"(INPUT) Column get by mouse: {targetColumn}");
+    }
+
+    private int LimitTargetColumn()
+    {
+        int column = GameBoard.GetOnBoardColumnByPosition(_mousePos);
+
+        var rightBoardMargin = GameBoard.Right;
+        var leftBoardMargin = GameBoard.Left;
+
+        var shape = _currentSelectedQueueSandBlock.GetShape();
+
+        Vector2Int shape_middlePoint = shape.GetMiddlePointOfShape();
+
+        var leftShape = column - shape_middlePoint.y;
+        var rightShape = column + shape_middlePoint.y;
+
+        Debug.Log($"(INPUT) LeftShape: {leftShape}/{leftBoardMargin} --- Right shape: {rightShape}/{rightBoardMargin}");
+
+        if (leftShape < leftBoardMargin)
+        {
+            column = leftBoardMargin + shape_middlePoint.y;
+        }
+        else if (rightShape > rightBoardMargin)
+        {
+            column = rightBoardMargin - shape_middlePoint.y;
+        }
+
+        return column;
     }
 }

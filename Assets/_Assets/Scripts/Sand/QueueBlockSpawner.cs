@@ -14,8 +14,9 @@ public class QueueBlockSpawner : MonoBehaviour
     private Transform[,] queueVirtualPositionGrid;
     private int _queueRow;
     private int _queueColumn;
-    private ShapeReader _shapeReader;
+    private int _startColumn;
     private EasyObjectPool EasyObjectPool => EasyObjectPool.instance;
+    private ShapeReader ShapeReader => ShapeReader.Instance;
 
     private void Awake()
     {
@@ -42,17 +43,32 @@ public class QueueBlockSpawner : MonoBehaviour
     }
 
 
-    public void CreateQueueVirtualShape(int startColumn = 1)
+    public void CreateQueueVirtualShape()
     {
-        var shape = _queueSandBlock.GetShape();
+        var shape = ShapeReader.GetShape();
+        FindStartSpawningPosition(shape, out var startRow, out var startColumn);
 
         for (var j = 0; j < shape.Column; j++)
         for (var i = shape.Row - 1; i >= 0; i--)
         {
             if (shape.Matrix[i, j] == 0)
                 continue;
-            var sand = CreateNewSand(_queueRow - i - 1, j + startColumn);
+            // var sand = CreateNewSand(_queueRow - i - 1, j + 1);
+            var sand = CreateNewSand(startRow - i, startColumn + j);
         }
+    }
+
+    private void FindStartSpawningPosition(Shape shape, out int startRow, out int startColumn)
+    {
+        var shape_middlePoint = shape.GetMiddlePointOfShape();
+
+        var grid_middlePoint = new Vector2Int(_queueRow / 2, _queueColumn / 2);
+
+        Debug.Log($"(SPAWN) Middle Point of Shape: [{shape_middlePoint.x},{shape_middlePoint.y}] --- [{shape.Row - 1},{shape.Column - 1}]");
+        Debug.Log($"(SPAWN) Middle Point of Grid: [{grid_middlePoint.x},{grid_middlePoint.y}] --- [{_queueRow - 1},{_queueColumn - 1}]");
+
+        startRow = grid_middlePoint.x + shape_middlePoint.x;
+        startColumn = grid_middlePoint.y - shape_middlePoint.y;
     }
 
     private SandController CreateNewSand(int row, int column)

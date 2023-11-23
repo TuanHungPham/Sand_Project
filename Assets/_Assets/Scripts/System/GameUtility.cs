@@ -13,7 +13,7 @@ public static class GameUtility
     public static void Log<T>(this IEnumerable<T> caller, Color color = default)
     {
         var messageBuilder = new StringBuilder();
-        foreach (var item in caller) messageBuilder.AppendLine($"item: {item}");
+        foreach (var item in caller) messageBuilder.AppendLine($"item: {item.ToString()}");
         Debug.Log($"List: {caller}:\n{GetColoredMessage(messageBuilder.ToString(), color)}");
     }
 

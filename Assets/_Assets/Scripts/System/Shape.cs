@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
 public class Shape
 {
@@ -16,6 +17,13 @@ public class Shape
         for (var i = 0; i < Row; i++)
         for (var j = 0; j < Column; j++)
             Matrix[i, j] = 1;
+    }
+
+    public Vector2Int GetMiddlePointOfShape()
+    {
+        int middleRow = Row / 2;
+        int middleColumn = Column / 2;
+        return new Vector2Int(middleRow, middleColumn);
     }
 
     public override string ToString()

@@ -129,6 +129,7 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
     {
         var sand = EasyObjectPool.GetObjectFromPool(PoolName.SAND_POOL, Vector3.one, Quaternion.identity);
         sand.transform.SetParent(_sandRoot);
+        sand.gameObject.name = string.Format($"[{row}, {column}]");
 
         SandController sandController = sand.GetComponent<SandController>();
 
