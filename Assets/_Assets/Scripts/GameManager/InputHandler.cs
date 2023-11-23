@@ -139,7 +139,7 @@ public class InputHandler : MonoBehaviour
     {
         int column = GameBoard.GetOnBoardColumnByPosition(_mousePos);
 
-        var rightBoardMargin = GameBoard.Right;
+        var rightBoardMargin = GameBoard.Right + 1;
         var leftBoardMargin = GameBoard.Left;
 
         var shape = _currentSelectedQueueSandBlock.GetShape();
