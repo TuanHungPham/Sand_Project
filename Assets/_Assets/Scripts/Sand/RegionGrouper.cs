@@ -307,7 +307,11 @@ public class RegionGrouper : TemporaryMonoSingleton<RegionGrouper>
             ReGroupRegions(region);
             region.UpdateRegionMargin();
 
-            CollectLineRegions();
+            if (IsLineRegion(region))
+            {
+                CollectLineRegions();
+                return;
+            }
         }
     }
 
