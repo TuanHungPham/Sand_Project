@@ -122,6 +122,11 @@ public class GameBoard : TemporaryMonoSingleton<GameBoard>
         LogicalMatrix[currentPosition.x, currentPosition.y] = value;
     }
 
+    public SandController At(Vector2Int position)
+    {
+        return SandMatrix.At(position);
+    }
+
     public List<SandController> AtRow(int row)
     {
         return SandMatrix.AtRow(row);

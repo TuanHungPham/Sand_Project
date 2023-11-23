@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-public class RegionGrouper : MonoBehaviour
+public class RegionGrouper : TemporaryMonoSingleton<RegionGrouper>
 {
     [SerializeField] private bool _shouldGroupRegions;
 
@@ -14,6 +14,7 @@ public class RegionGrouper : MonoBehaviour
     [SerializeField] private bool _shoudlGroupVirtualRegions;
     [SerializeField] private bool _shouldLogRegions;
     [SerializeField] private bool _shouldPauseGameOnGrouping;
+    [SerializeField] private Timer _timer;
 
     private int _colCount;
     private GameBoard _gameBoard;
@@ -49,6 +50,18 @@ public class RegionGrouper : MonoBehaviour
 
     private SandSpawner SandSpawner => SandSpawner.Instance;
 
+    private Timer Timer
+    {
+        get
+        {
+            if (_timer == null)
+                _timer = new Timer();
+            return _timer;
+        }
+    }
+
+    private bool HasPastInterval => Timer.HasPastInterval();
+
     private void Start()
     {
         InitializeGroupSetting();
@@ -62,10 +75,16 @@ public class RegionGrouper : MonoBehaviour
     // Example usage
     private void Update()
     {
-        Test();
+        if (!HasPastInterval)
+            return;
+
+        CheckMovingRegion();
+        CollectLineRegions();
+
+        CheckGroupRegion();
     }
 
-    private void Test()
+    private void CheckGroupRegion()
     {
         if (!_shouldGroupRegions) return;
         _shouldGroupRegions = false;
@@ -118,6 +137,11 @@ public class RegionGrouper : MonoBehaviour
             { 4, 4, 0, 0, 0, 2 }
         };
         return inputMatrix;
+    }
+
+    public void AddRegion(Region region)
+    {
+        _regions.Add(region);
     }
 
     private void ClearVirtualGroups()
@@ -192,9 +216,14 @@ public class RegionGrouper : MonoBehaviour
     private void CollectLineRegions()
     {
         Debug.Log($"Collecting Line Regions...");
-        for (int i = 0; i < _regions.Count; i++)
+        for (int i = _regions.Count - 1; i >= 0; i--)
         {
             var region = _regions[i];
+            if (region.SandsInRegion.Count <= 0)
+            {
+                _regions.Remove(region);
+                continue;
+            }
 
             if (IsLineRegion(region))
                 CollectRegion(region);
@@ -213,12 +242,9 @@ public class RegionGrouper : MonoBehaviour
 
     private void CollectLogicalRegion(Region region)
     {
-        for (int i = region._points.Count - 1; i >= 0; i--)
+        foreach (var sand in region.SandsInRegion)
         {
-            Vector2Int sandPos = region._points[i];
-            SandController sand = SandSpawner.GetSandAt(sandPos);
-
-            SandSpawner.DestroySand(sand);
+            SandSpawner.DestroySand(sand.Value);
         }
 
         _regions.Remove(region);
@@ -253,7 +279,11 @@ public class RegionGrouper : MonoBehaviour
     private void Dfs(int i, int j, Region region)
     {
         _visited[i, j] = true;
-        region.AddPoint(new Vector2Int(i, j));
+        var position = new Vector2Int(i, j);
+        region.AddPoint(position);
+
+        SandController sand = GameBoard.SandMatrix.At(position);
+        sand.SetCurrentRegion(region);
 
         int[] dx = { 0, 0, 1, -1, 1, 1, -1, -1 };
         int[] dy = { 1, -1, 0, 0, 1, -1, 1, -1 };
@@ -265,6 +295,76 @@ public class RegionGrouper : MonoBehaviour
 
             if (nx >= 0 && nx < _rowCount && ny >= 0 && ny < _colCount && !_visited[nx, ny] &&
                 Matrix[nx, ny] == Matrix[i, j]) Dfs(nx, ny, region);
+        }
+    }
+
+    private void CheckMovingRegion()
+    {
+        for (int i = _regions.Count - 1; i >= 0; i--)
+        {
+            var region = _regions[i];
+            if (!region.isMoving || region.IsInShaped()) continue;
+
+            ReGroupRegions(region);
+        }
+    }
+
+    public void ReGroupRegions(Region region)
+    {
+        Debug.Log($"(GROUPING) Re grouping region: {region}");
+
+        _rowCount = GetRows(Matrix);
+        _colCount = GetColumns(Matrix);
+        _visited = new bool[_rowCount, _colCount];
+
+        // for (var i = 0; i < _rowCount; i++)
+        // for (var j = 0; j < _colCount; j++)
+        //     if (!_visited[i, j] && Matrix[i, j] != 0)
+        //     {
+        //         var label = inputMatrix[i, j];
+        //         var group = new Region(label);
+        //         Dfs(i, j, group);
+        //         _regions.Add(group);
+        //         _groupCount++;
+        //     }
+
+        for (int i = 0; i < region.SandsInRegion.Count; i++)
+        {
+            var point = region.SandsInRegion[i];
+
+            // if (!GameBoard.SandMatrix.At(point).IsMoving())
+            if (_visited[point.Position.x, point.Position.y]) continue;
+            InRegionDfs(point.Position.x, point.Position.y, region);
+            region.SetMovingState(false);
+        }
+    }
+
+    private void InRegionDfs(int i, int j, Region region)
+    {
+        var position = new Vector2Int(i, j);
+        _visited[i, j] = true;
+
+        if (!region.ContainSandInRegion(position))
+        {
+            SandController sand = GameBoard.SandMatrix.At(position);
+
+            Region currentRegion = sand.GetCurrentRegion();
+            currentRegion.RemovePoint(sand);
+
+            region.AddPoint(position);
+            sand.SetCurrentRegion(region);
+        }
+
+        int[] dx = { 0, 0, 1, -1, 1, 1, -1, -1 };
+        int[] dy = { 1, -1, 0, 0, 1, -1, 1, -1 };
+
+        for (var k = 0; k < 8; k++)
+        {
+            var nx = i + dx[k];
+            var ny = j + dy[k];
+
+            if (nx >= 0 && nx < _rowCount && ny >= 0 && ny < _colCount && !_visited[nx, ny] &&
+                Matrix[nx, ny] == Matrix[i, j]) InRegionDfs(nx, ny, region);
         }
     }
 

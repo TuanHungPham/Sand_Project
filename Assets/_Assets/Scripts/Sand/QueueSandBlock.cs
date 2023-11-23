@@ -22,9 +22,15 @@ public class QueueSandBlock : MonoBehaviour
         _queueBlockSpawner = GetComponentInChildren<QueueBlockSpawner>();
     }
 
-    public void SetInitialPosition(Vector3 position)
+    public void Init(Vector3 position, int objectValue)
     {
         _initialPosition = position;
+        SetObjectValue(objectValue);
+    }
+
+    public void SetObjectValue(int objectValue)
+    {
+        _queueBlockSpawner.SetObjectValue(objectValue);
     }
 
     public void DropBlockToBoard()
@@ -79,5 +85,10 @@ public class QueueSandBlock : MonoBehaviour
     {
         Gizmos.DrawCube(transform.position, new Vector3(_interactingRadius, _interactingRadius, _interactingRadius));
         Gizmos.color = Color.white;
+    }
+
+    public int GetObjectValue()
+    {
+        return _queueBlockSpawner.GetObjectValue();
     }
 }

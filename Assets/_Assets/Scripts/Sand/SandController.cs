@@ -124,9 +124,12 @@ public class SandController : MonoBehaviour
     //     UpdateBoardMatrix(exPosition);
 
 
-    public void UpdateRegion()
+    public void UpdateRegion(bool isMovingHorizontal = false)
     {
-        _currentRegion.SetMovingState(true);
+        _currentRegion.SetMovingState(true, this);
+
+        if (!isMovingHorizontal) return;
+        _currentRegion.SetShapeState(false);
     }
 
     public void CheckMoveDown()
@@ -136,6 +139,8 @@ public class SandController : MonoBehaviour
         var exPosition = Position;
         if (Position.x <= 0)
         {
+            _isMoving = false;
+
             Log("cannot move - 0");
             return;
         }
@@ -162,6 +167,8 @@ public class SandController : MonoBehaviour
             return;
         if (Position.x <= 0)
         {
+            _isMoving = false;
+
             Log("cannot move - 0");
             return;
         }
@@ -193,7 +200,7 @@ public class SandController : MonoBehaviour
         if (canMoveLeft || canMoveRight)
         {
             _isMoving = true;
-            UpdateRegion();
+            UpdateRegion(true);
 
             UpdateBoardMatrix(exPosition);
         }
@@ -323,6 +330,11 @@ public class SandController : MonoBehaviour
         }
 
         EasyObjectPool.ReturnObjectToPool(gameObject);
+    }
+
+    public Region GetCurrentRegion()
+    {
+        return _currentRegion;
     }
 
     public bool IsMoving()

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class QueueBlockSpawner : MonoBehaviour
 {
-    [SerializeField] private int _objectValue = 1;
+    [SerializeField] private int _objectValue;
     [SerializeField] private QueueSandBlock _queueSandBlock;
     [SerializeField] private SandController _sandPfb;
     [SerializeField] private Transform _sandRoot;
@@ -76,5 +76,15 @@ public class QueueBlockSpawner : MonoBehaviour
             _queueSandList[i].DestroySand();
             _queueSandList.RemoveAt(i);
         }
+    }
+
+    public void SetObjectValue(int objectValue)
+    {
+        _objectValue = objectValue;
+    }
+
+    public int GetObjectValue()
+    {
+        return _objectValue;
     }
 }

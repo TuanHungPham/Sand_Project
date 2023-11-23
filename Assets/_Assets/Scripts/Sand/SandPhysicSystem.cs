@@ -11,8 +11,6 @@ public class SandPhysicSystem : TemporaryMonoSingleton<SandPhysicSystem>
 
     private GameBoard _gameBoard;
 
-    public Vector2Int movingDirection;
-
     public GameBoard GameBoard => GameBoard.Instance;
 
     private int Row => GameBoard.OnBoardRow;

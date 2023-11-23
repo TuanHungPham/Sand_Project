@@ -116,7 +116,7 @@ public class InputHandler : MonoBehaviour
         }
         else
         {
-            SandSpawner.CreateNewOnBoardSand(targetColumn, _currentSelectedQueueSandBlock);
+            SandSpawner.CreateNewOnBoardSand(targetColumn, _currentSelectedQueueSandBlock, _currentSelectedQueueSandBlock.GetObjectValue());
             _currentSelectedQueueSandBlock = null;
         }
     }

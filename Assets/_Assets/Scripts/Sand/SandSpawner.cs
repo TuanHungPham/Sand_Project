@@ -30,6 +30,7 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
 
     private Timer _timer;
 
+    private RegionGrouper RegionGrouper => RegionGrouper.Instance;
     private GameBoard GameBoard => GameBoard.Instance;
     private SandMatrix SandMatrix => GameBoard.SandMatrix;
     private EasyObjectPool EasyObjectPool => EasyObjectPool.instance;
@@ -89,6 +90,8 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
     {
         foreach (Transform point in _queuePointManager.GetPointList())
         {
+            _objectValue = Random.Range(1, (int)eSandType.MAX_COUNT);
+
             var pointPosition = point.position;
 
             var queueBlock = EasyObjectPool.GetObjectFromPool(PoolName.QUEUE_SAND_BLOCK, Vector3.one, Quaternion.identity);
@@ -96,38 +99,41 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
             queueBlock.transform.position = pointPosition;
 
             QueueSandBlock queueSandBlock = queueBlock.GetComponent<QueueSandBlock>();
+            queueSandBlock.Init(pointPosition, _objectValue);
             queueSandBlock.SetShape(ShapeReader.GetShape());
-            queueSandBlock.SetInitialPosition(pointPosition);
 
             _queueSandBlockList.Add(queueSandBlock);
         }
     }
 
-    public void CreateOnBoardVirtualShape(Shape shape, int startColumn)
+    public void CreateOnBoardVirtualShape(Shape shape, int startColumn, int objectValue = 1)
     {
+        Region region = new Region(objectValue);
+
         for (var j = 0; j < shape.Column; j++)
         for (var i = shape.Row - 1; i >= 0; i--)
         {
             if (shape.Matrix[i, j] == 0)
                 continue;
-            var sand = CreateNewSand(OnBoardRow - i - 1, j + startColumn);
+            var sand = CreateNewSand(OnBoardRow - i - 1, j + startColumn, objectValue);
+
+            region.AddPoint(new Vector2Int(OnBoardRow - i - 1, j + startColumn));
+            sand.SetCurrentRegion(region);
         }
+
+        RegionGrouper.AddRegion(region);
+        region.SetShapeState(true);
     }
 
-    private SandController CreateNewSand(int row, int column, bool isQueueBlock = false)
+    private SandController CreateNewSand(int row, int column, int objectValue = 1)
     {
         var sand = EasyObjectPool.GetObjectFromPool(PoolName.SAND_POOL, Vector3.one, Quaternion.identity);
         sand.transform.SetParent(_sandRoot);
 
         SandController sandController = sand.GetComponent<SandController>();
-        // var sand = Instantiate(_sandPfb, _sandRoot);
-        // sand.gameObject.SetActive(true);
 
-        if (!isQueueBlock)
-        {
-            sandController.SetData(row, column, _objectValue);
-            AddSand(sandController);
-        }
+        sandController.SetData(row, column, objectValue);
+        AddSand(sandController);
 
         return sandController;
     }
@@ -223,11 +229,11 @@ public class SandSpawner : TemporaryMonoSingleton<SandSpawner>
         }
     }
 
-    public void CreateNewOnBoardSand(int startColumn, QueueSandBlock queueSandBlock)
+    public void CreateNewOnBoardSand(int startColumn, QueueSandBlock queueSandBlock, int objectValue = 1)
     {
         var shape = queueSandBlock.GetShape();
 
-        CreateOnBoardVirtualShape(shape, startColumn);
+        CreateOnBoardVirtualShape(shape, startColumn, objectValue);
 
         queueSandBlock.DropBlockToBoard();
         queueSandBlock.ResetBlockPosition();
